@@ -1,0 +1,28 @@
+modLoader="javafml"
+loaderVersion="[35,)"
+#issueTrackerURL="http://my.issue.tracker/" #optional
+license="ARR"
+
+[[mods]]
+    modId="toy_trains"
+    version="${version}"
+    displayURL="https://www.curseforge.com/minecraft/mc-mods/travellers-map"
+    displayName="Travellers Map"
+    authors="JTK222"
+    redits="Thanks for Journey Map & Ancient Atlas as they both inspired this mod"
+    description='''
+    Travellers Map is a Minecraft Map mod, providing a minimap and a full map of your already explored areas.'''
+
+[[dependencies]]
+    modId="forge"
+    mandatory=true
+    versionRange="[35,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.4,)"
+    ordering="NONE"
+    side="BOTH"
