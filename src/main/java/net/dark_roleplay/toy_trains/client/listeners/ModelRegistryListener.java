@@ -1,7 +1,7 @@
 package net.dark_roleplay.toy_trains.client.listeners;
 
 import net.dark_roleplay.toy_trains.ToyTrains;
-import net.dark_roleplay.toy_trains.client.models.RailwayModelLoader;
+import net.dark_roleplay.toy_trains.client.models.railway.RailwayModelLoader;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelRegistryEvent;

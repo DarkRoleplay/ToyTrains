@@ -1,4 +1,4 @@
-package net.dark_roleplay.toy_trains.client.models;
+package net.dark_roleplay.toy_trains.client.models.railway;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;

@@ -1,4 +1,4 @@
-package net.dark_roleplay.toy_trains.client.models;
+package net.dark_roleplay.toy_trains.client.models.railway;
 
 import net.dark_roleplay.toy_trains.common.railways.RailwayData;
 import net.minecraftforge.client.model.data.IModelData;

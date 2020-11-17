@@ -1,4 +1,4 @@
-package net.dark_roleplay.toy_trains.client.models;
+package net.dark_roleplay.toy_trains.client.models.railway;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
