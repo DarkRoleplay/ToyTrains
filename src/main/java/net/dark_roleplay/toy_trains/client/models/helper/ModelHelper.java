@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 
@@ -18,53 +19,51 @@ public class ModelHelper {
 
 	private static final float RAIL_WIDTH = 1/16F * (3 * 0.5F);
 
-	public static IBakedModel getRailModel(Vector3f posA, Vector3f posB, float angleA, float angleB){
+	public static IBakedModel getRailModel(Vector3d posA, Vector3d posB, float angleA, float angleB){
 		TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(new ResourceLocation("minecraft:textures/block/iron_block"));
 
-		Vector3f[] vertBase = thicken(posA, posB, 0.03125F*4, angleA, angleB);
+		Vector3d[] vertBase = thicken(posA, posB, 0.03125F*4, angleA, angleB);
 
-		Vector3f[] vertA = thicken(vertBase[0], vertBase[1], 0.03125F, angleA, angleB);
-		Vector3f[] vertB = thicken(vertBase[2], vertBase[3], 0.03125F, angleA, angleB);
+		Vector3d[] vertA = thicken(vertBase[0], vertBase[1], 0.03125F, angleA, angleB);
+		Vector3d[] vertB = thicken(vertBase[2], vertBase[3], 0.03125F, angleA, angleB);
 
 		return new SimpleBakedModel(sprite, Streams.concat(Arrays.stream(getQuadsForBox(sprite, vertA)), Arrays.stream(getQuadsForBox(sprite, vertB))).collect(Collectors.toList()));
 	}
 
-	private static Vector3f[] thicken(Vector3f posA, Vector3f posB, float width, float angleA, float angleB){
-		Vector3f[] result = new Vector3f[4];
+	private static Vector3d[] thicken(Vector3d posA, Vector3d posB, float width, float angleA, float angleB){
+		Vector3d[] result = new Vector3d[4];
 
-		result[0] = posA.copy();
-		result[1] = posB.copy();
-		result[2] = posA.copy();
-		result[3] = posB.copy();
+		result[0] = new Vector3d(posA.getX(), posA.getY(), posA.getZ());
+		result[1] = new Vector3d(posB.getX(), posB.getY(), posB.getZ());
+		result[2] = new Vector3d(posA.getX(), posA.getY(), posA.getZ());
+		result[3] = new Vector3d(posB.getX(), posB.getY(), posB.getZ());
 
 		float cosAngleA = (float) Math.cos(angleA);
 		float sinAngleA = (float) Math.sin(angleA);
 		float cosAngleB = (float) Math.cos(angleB);
 		float sinAngleB = (float) Math.sin(angleB);
 
-		Vector3f ab = new Vector3f(posB.getX() - posA.getX(), posB.getY() - posA.getY(), posB.getZ() - posA.getZ());
+		Vector3d ab = new Vector3d(posB.getX() - posA.getX(), posB.getY() - posA.getY(), posB.getZ() - posA.getZ());
 
 
-		Vector3f bA = new Vector3f((ab.getX() * cosAngleA) + (ab.getZ() * sinAngleA), ab.getY(), (-ab.getX() * sinAngleA) + (ab.getZ() * cosAngleA));
-		Vector3f bB = new Vector3f((ab.getX() * cosAngleB) + (ab.getZ() * sinAngleB), ab.getY(), (-ab.getX() * sinAngleB) + (ab.getZ() * cosAngleB));
+		Vector3d bA = new Vector3d((ab.getX() * cosAngleA) + (ab.getZ() * sinAngleA), ab.getY(), (-ab.getX() * sinAngleA) + (ab.getZ() * cosAngleA));
+		Vector3d bB = new Vector3d((ab.getX() * cosAngleB) + (ab.getZ() * sinAngleB), ab.getY(), (-ab.getX() * sinAngleB) + (ab.getZ() * cosAngleB));
 
-		bA.normalize();
-		bB.normalize();
-		bA.mul(width);
-		bB.mul(width);
+		bA = bA.normalize().mul(width, width, width);
+		bB = bB.normalize().mul(width, width, width);
 
-		result[0].add(bA);
-		result[1].add(bB);
-		result[2].sub(bA);
-		result[3].sub(bB);
+		result[0] = result[0].add(bA);
+		result[1] = result[1].add(bB);
+		result[2] = result[2].subtract(bA);
+		result[3] = result[3].subtract(bB);
 
 		return result;
 	}
 
-	public static BakedQuad[] getQuadsForBox(TextureAtlasSprite sprite, Vector3f... verts){
-		Vector3f upperVerts[] = new Vector3f[verts.length];
+	public static BakedQuad[] getQuadsForBox(TextureAtlasSprite sprite, Vector3d... verts){
+		Vector3d upperVerts[] = new Vector3d[verts.length];
 		for(int i = 0; i < verts.length; i++){
-			upperVerts[i] = new Vector3f(verts[i].getX(), verts[i].getY() + 0.0625F ,verts[i].getZ()); //TODO Switch size to be positive
+			upperVerts[i] = new Vector3d(verts[i].getX(), verts[i].getY() + 0.0625F ,verts[i].getZ()); //TODO Switch size to be positive
 		}
 
 		BakedQuad[] quads = new BakedQuad[4];
@@ -79,11 +78,11 @@ public class ModelHelper {
 //	.add(POSITION_3F).add(COLOR_4UB).add(TEX_2F).add(TEX_2SB).add(NORMAL_3B).add(PADDING_1B).build());
 
 
-	private static BakedQuad getQuad(BakedQuadBuilder builder, Direction facing, float u1, float v1, float u2, float v2, Vector3f... vertices){
+	public static BakedQuad getQuad(BakedQuadBuilder builder, Direction facing, float u1, float v1, float u2, float v2, Vector3d... vertices){
 		float[][] uv = {{u1, v1}, {u2, v1}, {u2, v2}, {u1, v2}};
 		builder.setQuadOrientation(facing);
 		for(int i = 0; i < vertices.length; i++){
-			builder.put(0, vertices[i].getX(), vertices[i].getY(), vertices[i].getZ());
+			builder.put(0, (float)vertices[i].getX(), (float)vertices[i].getY(), (float)vertices[i].getZ());
 			builder.put(1, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF);
 			builder.put(2, uv[i][0], uv[i][1]);
 			builder.put(3, 0xFF, 0xFF);
